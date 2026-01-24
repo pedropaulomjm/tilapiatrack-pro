@@ -5,6 +5,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { Navigation } from "./components/Navigation";
+import { NotificationCenter } from "./components/NotificationCenter";
 import Dashboard from "./pages/Dashboard";
 import TankManagement from "./pages/TankManagement";
 import TankSettings from "./pages/TankSettings";
@@ -14,6 +15,8 @@ import Insights from "./pages/Insights";
 import FeedingControl from "./pages/FeedingControl";
 import StockManagement from "./pages/StockManagement";
 import FinancialDashboard from "./pages/FinancialDashboard";
+import HomeDashboard from "./pages/HomeDashboard";
+import SupplierComparison from "./pages/SupplierComparison";
 
 function Router() {
   return (
@@ -29,6 +32,8 @@ function Router() {
       <Route path={"/feeding"} component={FeedingControl} />
       <Route path={"/stock"} component={StockManagement} />
       <Route path={"/financial"} component={FinancialDashboard} />
+      <Route path={"/home"} component={HomeDashboard} />
+      <Route path={"/suppliers"} component={SupplierComparison} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
@@ -42,7 +47,7 @@ function App() {
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
-          <Navigation />
+          <NotificationCenter />
           <Router />
         </TooltipProvider>
       </ThemeProvider>

@@ -125,3 +125,28 @@
 - [x] Garantir sincronização de todos os dados editáveis
 - [x] Implementar backup automático
 - [x] Implementar versionamento de dados
+
+
+## Fase 20: Painel de Controle Inicial
+- [x] Criar Home Dashboard com KPIs principais
+- [x] Implementar cards de resumo (receita, custo, lucro, margem)
+- [x] Adicionar alertas críticos em destaque
+- [x] Criar atalhos para principais funcionalidades
+- [x] Implementar gráficos de resumo executivo
+
+## Fase 21: Sistema de Notificações
+- [x] Criar tabela de notificações
+- [x] Implementar alertas visuais (toast/modal)
+- [x] Implementar alertas sonoros
+- [x] Criar centro de notificações com histórico
+- [x] Integrar com alertas de estoque baixo
+- [x] Integrar com alertas de parâmetros de água
+- [x] Implementar configuração de preferências de notificação
+
+## Fase 22: Módulo de Comparação de Preços
+- [x] Criar página de análise de fornecedores
+- [x] Implementar comparativo de preços por item
+- [x] Criar gráficos de histórico de preços
+- [x] Implementar análise de tendências de preços
+- [x] Criar recomendações de melhor fornecedor
+- [x] Implementar relatório de economia potencial
