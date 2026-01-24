@@ -1,4 +1,4 @@
-import { eq, and, or, desc, gte, lte, between } from "drizzle-orm";
+import { eq, and, or, desc, gte, lte, between, isNull, asc, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, 
@@ -11,6 +11,8 @@ import {
   reportConfigs,
   webhookTokens,
   systemEvents,
+  feedingRecords,
+  weightSamples,
   Tank,
   WaterQualityData,
   Alert,
@@ -18,7 +20,9 @@ import {
   Prediction,
   ReportConfig,
   WebhookToken,
-  SystemEvent
+  SystemEvent,
+  FeedingRecord,
+  WeightSample
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -886,4 +890,137 @@ export async function getSpeciesParametersForTank(tankId: number) {
     .select()
     .from(speciesParameters)
     .where(eq(speciesParameters.speciesId, tankSpeciesRecord[0].speciesId));
+}
+
+
+// ============ FEEDING COST FUNCTIONS ============
+
+export async function updateFeedingRecordCost(
+  id: number,
+  costPerUnit: number,
+  quantity: number
+): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  const totalCost = costPerUnit * quantity;
+
+  await db
+    .update(feedingRecords)
+    .set({
+      costPerUnit: costPerUnit.toString(),
+      totalCost: totalCost.toString(),
+    })
+    .where(eq(feedingRecords.id, id));
+}
+
+export async function getFeedingRecordsByCost(tankId: number): Promise<any[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db
+    .select()
+    .from(feedingRecords)
+    .where(and(eq(feedingRecords.tankId, tankId), isNull(feedingRecords.deletedAt)))
+    .orderBy(desc(feedingRecords.timestamp));
+}
+
+export async function getTotalFeedingCost(tankId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+
+  const result = await db
+    .select({
+      total: sql<number>`SUM(CAST(${feedingRecords.totalCost} AS DECIMAL(10,2)))`,
+    })
+    .from(feedingRecords)
+    .where(and(eq(feedingRecords.tankId, tankId), isNull(feedingRecords.deletedAt)));
+
+  return result[0]?.total || 0;
+}
+
+// ============ WEIGHT SAMPLING FUNCTIONS ============
+
+export async function createWeightSample(data: {
+  tankId: number;
+  sampleSize: number;
+  averageWeight: number;
+  totalWeight: number;
+  notes?: string;
+}): Promise<any> {
+  const db = await getDb();
+  if (!db) return null;
+
+  const result = await db.insert(weightSamples).values({
+    tankId: data.tankId,
+    sampleSize: data.sampleSize,
+    averageWeight: data.averageWeight.toString(),
+    totalWeight: data.totalWeight.toString(),
+    notes: data.notes || null,
+    timestamp: new Date(),
+    createdAt: new Date(),
+  });
+
+  return result;
+}
+
+export async function getWeightSamplesByTank(tankId: number): Promise<any[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db
+    .select()
+    .from(weightSamples)
+    .where(and(eq(weightSamples.tankId, tankId), isNull(weightSamples.deletedAt)))
+    .orderBy(desc(weightSamples.timestamp));
+}
+
+export async function getLatestWeightSample(tankId: number): Promise<any> {
+  const db = await getDb();
+  if (!db) return null;
+
+  const result = await db
+    .select()
+    .from(weightSamples)
+    .where(and(eq(weightSamples.tankId, tankId), isNull(weightSamples.deletedAt)))
+    .orderBy(desc(weightSamples.timestamp))
+    .limit(1);
+
+  return result[0] || null;
+}
+
+export async function getAverageWeightGrowth(tankId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+
+  const samples = await db
+    .select()
+    .from(weightSamples)
+    .where(and(eq(weightSamples.tankId, tankId), isNull(weightSamples.deletedAt)))
+    .orderBy(asc(weightSamples.timestamp));
+
+  if (samples.length < 2) return 0;
+
+  const firstWeight = parseFloat(samples[0].averageWeight as any);
+  const lastWeight = parseFloat(samples[samples.length - 1].averageWeight as any);
+  const daysDiff = Math.max(
+    1,
+    Math.floor(
+      (new Date(samples[samples.length - 1].timestamp).getTime() -
+        new Date(samples[0].timestamp).getTime()) /
+        (1000 * 60 * 60 * 24)
+    )
+  );
+
+  return (lastWeight - firstWeight) / daysDiff;
+}
+
+export async function deleteWeightSample(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  await db
+    .update(weightSamples)
+    .set({ deletedAt: new Date() })
+    .where(eq(weightSamples.id, id));
 }

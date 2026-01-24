@@ -213,12 +213,33 @@ export const feedingRecords = mysqlTable("feeding_records", {
   feederId: int("feederId"),
   quantityPlanned: decimal("quantityPlanned", { precision: 8, scale: 2 }),
   quantityActual: decimal("quantityActual", { precision: 8, scale: 2 }),
+  costPerUnit: decimal("costPerUnit", { precision: 10, scale: 2 }),
+  totalCost: decimal("totalCost", { precision: 10, scale: 2 }),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
+  deletedAt: timestamp("deletedAt"),
 });
 
 export type FeedingRecord = typeof feedingRecords.$inferSelect;
 export type InsertFeedingRecord = typeof feedingRecords.$inferInsert;
+
+/**
+ * Amostragem de peso por tanque
+ */
+export const weightSamples = mysqlTable("weight_samples", {
+  id: int("id").autoincrement().primaryKey(),
+  tankId: int("tankId").notNull(),
+  sampleSize: int("sampleSize"), // número de peixes amostrados
+  averageWeight: decimal("averageWeight", { precision: 8, scale: 3 }), // peso médio em gramas
+  totalWeight: decimal("totalWeight", { precision: 10, scale: 2 }), // peso total da amostra
+  notes: text("notes"),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  deletedAt: timestamp("deletedAt"),
+});
+
+export type WeightSample = typeof weightSamples.$inferSelect;
+export type InsertWeightSample = typeof weightSamples.$inferInsert;
 
 /**
  * Itens de estoque
@@ -336,22 +357,7 @@ export const waterParameterReferences = mysqlTable("water_parameter_references",
 export type WaterParameterReference = typeof waterParameterReferences.$inferSelect;
 export type InsertWaterParameterReference = typeof waterParameterReferences.$inferInsert;
 
-/**
- * Amostragem de peso de peixes
- */
-export const weightSamples = mysqlTable("weight_samples", {
-  id: int("id").autoincrement().primaryKey(),
-  tankId: int("tankId").notNull(),
-  sampleSize: int("sampleSize").default(0).notNull(),
-  averageWeight: decimal("averageWeight", { precision: 8, scale: 3 }).notNull(),
-  totalWeight: decimal("totalWeight", { precision: 12, scale: 2 }),
-  notes: text("notes"),
-  timestamp: timestamp("timestamp").defaultNow().notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
 
-export type WeightSample = typeof weightSamples.$inferSelect;
-export type InsertWeightSample = typeof weightSamples.$inferInsert;
 
 /**
  * Câmeras de segurança

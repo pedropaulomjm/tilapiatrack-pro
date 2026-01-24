@@ -36,6 +36,13 @@
       "when": 1769236424794,
       "tag": "0004_panoramic_mandarin",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1769237093740,
+      "tag": "0005_special_gwen_stacy",
+      "breakpoints": true
     }
   ]
 }

@@ -8,6 +8,8 @@ import Home from "./pages/Home";
 import AuditLog from "./pages/AuditLog";
 import SpeciesManagement from "./pages/SpeciesManagement";
 import AnalyticsComparison from "./pages/AnalyticsComparison";
+import WeightSampling from "./pages/WeightSampling";
+import TankDetailDashboard from "./pages/TankDetailDashboard";
 import { NotificationCenter } from "./components/NotificationCenter";
 import { MainLayout } from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
@@ -44,6 +46,8 @@ function Router() {
         <Route path={"/modules"} component={ModulesPage} />
         <Route path={"/species"} component={SpeciesManagement} />
         <Route path={"/analytics"} component={AnalyticsComparison} />
+        <Route path={"/weight-sampling"} component={WeightSampling} />
+        <Route path={"/tank-detail"} component={TankDetailDashboard} />
         <Route path={"/404"} component={NotFound} />
         {/* Final fallback route */}
         <Route component={NotFound} />

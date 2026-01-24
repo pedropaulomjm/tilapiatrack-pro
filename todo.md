@@ -222,3 +222,27 @@
 - [x] Comparativo de receitas entre tanques
 - [x] Comparativo de mortalidade entre tanques
 - [x] Testes de análises comparativas
+
+
+## Fase 31: Custo em Alimentação e Amostragem
+- [x] Adicionar campo de custo em feedingRecords
+- [x] Adicionar tabela de weightSampling
+- [x] Implementar cálculo de custo total de alimentação
+- [x] Criar formulário de amostragem de peso
+- [x] Implementar histórico de peso médio
+- [x] Testes de custo e amostragem
+
+## Fase 32: Dashboard de Tanque Expandido
+- [x] Adicionar custo atual do tanque
+- [x] Adicionar custo esperado para fim de ciclo
+- [x] Integrar feed de câmera ao vivo
+- [x] Integrar parâmetros de água em tempo real
+- [x] Criar layout responsivo com câmera e parâmetros
+- [x] Testes de dashboard expandido
+
+## Fase 33: Integração de Câmera e Parâmetros em Tempo Real
+- [x] Configurar stream de câmera RTMP/HLS
+- [x] Implementar WebSocket para parâmetros em tempo real
+- [x] Criar componente de visualização de câmera
+- [x] Sincronizar parâmetros com câmera
+- [x] Testes de integração em tempo real
