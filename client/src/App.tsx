@@ -10,6 +10,7 @@ import SpeciesManagement from "./pages/SpeciesManagement";
 import AnalyticsComparison from "./pages/AnalyticsComparison";
 import WeightSampling from "./pages/WeightSampling";
 import TankDetailDashboard from "./pages/TankDetailDashboard";
+import AlertsCenter from "./pages/AlertsCenter";
 import { NotificationCenter } from "./components/NotificationCenter";
 import { MainLayout } from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
@@ -48,6 +49,7 @@ function Router() {
         <Route path={"/analytics"} component={AnalyticsComparison} />
         <Route path={"/weight-sampling"} component={WeightSampling} />
         <Route path={"/tank-detail"} component={TankDetailDashboard} />
+        <Route path={"/alerts"} component={AlertsCenter} />
         <Route path={"/404"} component={NotFound} />
         {/* Final fallback route */}
         <Route component={NotFound} />
