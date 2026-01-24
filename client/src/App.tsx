@@ -4,13 +4,25 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
+import { Navigation } from "./components/Navigation";
+import Dashboard from "./pages/Dashboard";
+import TankManagement from "./pages/TankManagement";
+import TankSettings from "./pages/TankSettings";
+import Reports from "./pages/Reports";
+import WebhookManagement from "./pages/WebhookManagement";
+import Insights from "./pages/Insights";
 
 function Router() {
-  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
-      <Route path={"/"} component={Home} />
+      <Route path={"/"} component={Dashboard} />
+      <Route path={"/tanks"} component={TankManagement} />
+      <Route path={"/tanks/new"} component={TankManagement} />
+      <Route path={"/tanks/:id"} component={Dashboard} />
+      <Route path={"/tanks/:id/settings"} component={TankSettings} />
+      <Route path={"/reports"} component={Reports} />
+      <Route path={"/webhooks"} component={WebhookManagement} />
+      <Route path={"/insights"} component={Insights} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
@@ -18,20 +30,13 @@ function Router() {
   );
 }
 
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
-
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        // switchable
-      >
+      <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
+          <Navigation />
           <Router />
         </TooltipProvider>
       </ThemeProvider>
