@@ -6,6 +6,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { Navigation } from "./components/Navigation";
 import { NotificationCenter } from "./components/NotificationCenter";
+import { MainLayout } from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import TankManagement from "./pages/TankManagement";
 import TankSettings from "./pages/TankSettings";
@@ -17,27 +18,31 @@ import StockManagement from "./pages/StockManagement";
 import FinancialDashboard from "./pages/FinancialDashboard";
 import HomeDashboard from "./pages/HomeDashboard";
 import SupplierComparison from "./pages/SupplierComparison";
+import ModulesPage from "./pages/ModulesPage";
 
 function Router() {
   return (
-    <Switch>
-      <Route path={"/"} component={Dashboard} />
-      <Route path={"/tanks"} component={TankManagement} />
-      <Route path={"/tanks/new"} component={TankManagement} />
-      <Route path={"/tanks/:id"} component={Dashboard} />
-      <Route path={"/tanks/:id/settings"} component={TankSettings} />
-      <Route path={"/reports"} component={Reports} />
-      <Route path={"/webhooks"} component={WebhookManagement} />
-      <Route path={"/insights"} component={Insights} />
-      <Route path={"/feeding"} component={FeedingControl} />
-      <Route path={"/stock"} component={StockManagement} />
-      <Route path={"/financial"} component={FinancialDashboard} />
-      <Route path={"/home"} component={HomeDashboard} />
-      <Route path={"/suppliers"} component={SupplierComparison} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
-      <Route component={NotFound} />
-    </Switch>
+    <MainLayout>
+      <Switch>
+        <Route path={"/"} component={Dashboard} />
+        <Route path={"/tanks"} component={TankManagement} />
+        <Route path={"/tanks/new"} component={TankManagement} />
+        <Route path={"/tanks/:id"} component={Dashboard} />
+        <Route path={"/tanks/:id/settings"} component={TankSettings} />
+        <Route path={"/reports"} component={Reports} />
+        <Route path={"/webhooks"} component={WebhookManagement} />
+        <Route path={"/insights"} component={Insights} />
+        <Route path={"/feeding"} component={FeedingControl} />
+        <Route path={"/stock"} component={StockManagement} />
+        <Route path={"/financial"} component={FinancialDashboard} />
+        <Route path={"/home"} component={HomeDashboard} />
+        <Route path={"/suppliers"} component={SupplierComparison} />
+        <Route path={"/modules"} component={ModulesPage} />
+        <Route path={"/404"} component={NotFound} />
+        {/* Final fallback route */}
+        <Route component={NotFound} />
+      </Switch>
+    </MainLayout>
   );
 }
 
@@ -47,7 +52,6 @@ function App() {
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
-          <NotificationCenter />
           <Router />
         </TooltipProvider>
       </ThemeProvider>

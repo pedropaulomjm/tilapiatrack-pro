@@ -150,3 +150,13 @@
 - [x] Implementar análise de tendências de preços
 - [x] Criar recomendações de melhor fornecedor
 - [x] Implementar relatório de economia potencial
+
+
+## Fase 23: Seletor de Páginas por Módulos
+- [x] Criar componente ModuleSelector com categorias
+- [x] Implementar navegação lateral com módulos
+- [x] Agrupar páginas por categoria (Financeiro, Tanques, Estoque, etc)
+- [x] Adicionar ícones e cores distintas por módulo
+- [x] Implementar collapse/expand de categorias
+- [x] Integrar ao layout principal
+- [x] Testes de navegação
