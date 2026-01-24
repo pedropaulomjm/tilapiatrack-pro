@@ -6,6 +6,8 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import AuditLog from "./pages/AuditLog";
+import SpeciesManagement from "./pages/SpeciesManagement";
+import AnalyticsComparison from "./pages/AnalyticsComparison";
 import { NotificationCenter } from "./components/NotificationCenter";
 import { MainLayout } from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
@@ -40,6 +42,8 @@ function Router() {
         <Route path={"/suppliers"} component={SupplierComparison} />
         <Route path={"/audit"} component={AuditLog} />
         <Route path={"/modules"} component={ModulesPage} />
+        <Route path={"/species"} component={SpeciesManagement} />
+        <Route path={"/analytics"} component={AnalyticsComparison} />
         <Route path={"/404"} component={NotFound} />
         {/* Final fallback route */}
         <Route component={NotFound} />

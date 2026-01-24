@@ -366,6 +366,52 @@ export const appRouter = router({
       }),
   }),
 
+  // ============ SPECIES PROCEDURES ============
+  species: router({
+    list: protectedProcedure.query(async () => {
+      return db.getFishSpecies();
+    }),
+
+    getById: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return db.getFishSpeciesById(input.id);
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        name: z.string().min(1),
+        scientificName: z.string().optional(),
+        description: z.string().optional(),
+        idealTemperatureMin: z.number().optional(),
+        idealTemperatureMax: z.number().optional(),
+        idealPHMin: z.number().optional(),
+        idealPHMax: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return db.createFishSpecies(input);
+      }),
+
+    getParameters: protectedProcedure
+      .input(z.object({ speciesId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getSpeciesParameters(input.speciesId);
+      }),
+
+    setParameter: protectedProcedure
+      .input(z.object({
+        speciesId: z.number(),
+        parameter: z.enum(["pH", "temperature", "dissolvedOxygen", "ammonia"]),
+        minSafe: z.number(),
+        maxSafe: z.number(),
+        minCritical: z.number().optional(),
+        maxCritical: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return db.setSpeciesParameter(input);
+      }),
+  }),
+
   audit: router({
     getLogs: protectedProcedure
       .input(z.object({

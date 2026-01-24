@@ -410,3 +410,54 @@ export const auditLog = mysqlTable("audit_log", {
 
 export type AuditLog = typeof auditLog.$inferSelect;
 export type InsertAuditLog = typeof auditLog.$inferInsert;
+
+
+/**
+ * Espécies de peixe
+ */
+export const fishSpecies = mysqlTable("fish_species", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull().unique(),
+  scientificName: varchar("scientificName", { length: 255 }),
+  description: text("description"),
+  idealTemperatureMin: decimal("idealTemperatureMin", { precision: 5, scale: 2 }),
+  idealTemperatureMax: decimal("idealTemperatureMax", { precision: 5, scale: 2 }),
+  idealPHMin: decimal("idealPHMin", { precision: 4, scale: 2 }),
+  idealPHMax: decimal("idealPHMax", { precision: 4, scale: 2 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type FishSpecies = typeof fishSpecies.$inferSelect;
+export type InsertFishSpecies = typeof fishSpecies.$inferInsert;
+
+/**
+ * Parâmetros ideais globais por espécie
+ */
+export const speciesParameters = mysqlTable("species_parameters", {
+  id: int("id").autoincrement().primaryKey(),
+  speciesId: int("speciesId").notNull(),
+  parameter: mysqlEnum("parameter", ["pH", "temperature", "dissolvedOxygen", "ammonia"]).notNull(),
+  minSafe: decimal("minSafe", { precision: 8, scale: 2 }).notNull(),
+  maxSafe: decimal("maxSafe", { precision: 8, scale: 2 }).notNull(),
+  minCritical: decimal("minCritical", { precision: 8, scale: 2 }),
+  maxCritical: decimal("maxCritical", { precision: 8, scale: 2 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SpeciesParameter = typeof speciesParameters.$inferSelect;
+export type InsertSpeciesParameter = typeof speciesParameters.$inferInsert;
+
+/**
+ * Vincular tanques a espécies
+ */
+export const tankSpecies = mysqlTable("tank_species", {
+  id: int("id").autoincrement().primaryKey(),
+  tankId: int("tankId").notNull().unique(),
+  speciesId: int("speciesId").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type TankSpecies = typeof tankSpecies.$inferSelect;
+export type InsertTankSpecies = typeof tankSpecies.$inferInsert;

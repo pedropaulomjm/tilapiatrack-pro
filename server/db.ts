@@ -716,3 +716,174 @@ export async function softDeleteWebhookToken(tokenId: number, userId: number, re
 
   return db.delete(webhookTokens).where(eq(webhookTokens.id, tokenId));
 }
+
+
+// ============ FISH SPECIES QUERIES ============
+
+export async function createFishSpecies(data: {
+  name: string;
+  scientificName?: string;
+  description?: string;
+  idealTemperatureMin?: number;
+  idealTemperatureMax?: number;
+  idealPHMin?: number;
+  idealPHMax?: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const { fishSpecies } = await import("../drizzle/schema");
+  return db.insert(fishSpecies).values({
+    name: data.name,
+    scientificName: data.scientificName,
+    description: data.description,
+    idealTemperatureMin: data.idealTemperatureMin as any,
+    idealTemperatureMax: data.idealTemperatureMax as any,
+    idealPHMin: data.idealPHMin as any,
+    idealPHMax: data.idealPHMax as any,
+  });
+}
+
+export async function getFishSpecies() {
+  const db = await getDb();
+  if (!db) return [];
+
+  const { fishSpecies } = await import("../drizzle/schema");
+  return db.select().from(fishSpecies);
+}
+
+export async function getFishSpeciesById(speciesId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const { fishSpecies } = await import("../drizzle/schema");
+  const result = await db
+    .select()
+    .from(fishSpecies)
+    .where(eq(fishSpecies.id, speciesId))
+    .limit(1);
+
+  return result.length > 0 ? result[0] : undefined;
+}
+
+// ============ SPECIES PARAMETERS QUERIES ============
+
+export async function setSpeciesParameter(data: {
+  speciesId: number;
+  parameter: "pH" | "temperature" | "dissolvedOxygen" | "ammonia";
+  minSafe: number;
+  maxSafe: number;
+  minCritical?: number;
+  maxCritical?: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const { speciesParameters } = await import("../drizzle/schema");
+
+  // Check if parameter already exists
+  const existing = await db
+    .select()
+    .from(speciesParameters)
+    .where(
+      and(
+        eq(speciesParameters.speciesId, data.speciesId),
+        eq(speciesParameters.parameter, data.parameter)
+      )
+    )
+    .limit(1);
+
+  if (existing.length > 0) {
+    return db
+      .update(speciesParameters)
+      .set({
+        minSafe: data.minSafe as any,
+        maxSafe: data.maxSafe as any,
+        minCritical: data.minCritical as any,
+        maxCritical: data.maxCritical as any,
+      })
+      .where(eq(speciesParameters.id, existing[0].id));
+  }
+
+  return db.insert(speciesParameters).values({
+    speciesId: data.speciesId,
+    parameter: data.parameter,
+    minSafe: data.minSafe as any,
+    maxSafe: data.maxSafe as any,
+    minCritical: data.minCritical as any,
+    maxCritical: data.maxCritical as any,
+  });
+}
+
+export async function getSpeciesParameters(speciesId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const { speciesParameters } = await import("../drizzle/schema");
+  return db
+    .select()
+    .from(speciesParameters)
+    .where(eq(speciesParameters.speciesId, speciesId));
+}
+
+// ============ TANK SPECIES QUERIES ============
+
+export async function linkTankToSpecies(tankId: number, speciesId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const { tankSpecies } = await import("../drizzle/schema");
+
+  // Check if already linked
+  const existing = await db
+    .select()
+    .from(tankSpecies)
+    .where(eq(tankSpecies.tankId, tankId))
+    .limit(1);
+
+  if (existing.length > 0) {
+    return db
+      .update(tankSpecies)
+      .set({ speciesId })
+      .where(eq(tankSpecies.tankId, tankId));
+  }
+
+  return db.insert(tankSpecies).values({
+    tankId,
+    speciesId,
+  });
+}
+
+export async function getTankSpecies(tankId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const { tankSpecies } = await import("../drizzle/schema");
+  const result = await db
+    .select()
+    .from(tankSpecies)
+    .where(eq(tankSpecies.tankId, tankId))
+    .limit(1);
+
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getSpeciesParametersForTank(tankId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const { tankSpecies, speciesParameters } = await import("../drizzle/schema");
+
+  const tankSpeciesRecord = await db
+    .select()
+    .from(tankSpecies)
+    .where(eq(tankSpecies.tankId, tankId))
+    .limit(1);
+
+  if (tankSpeciesRecord.length === 0) return [];
+
+  return db
+    .select()
+    .from(speciesParameters)
+    .where(eq(speciesParameters.speciesId, tankSpeciesRecord[0].speciesId));
+}

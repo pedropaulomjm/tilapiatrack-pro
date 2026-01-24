@@ -182,3 +182,43 @@
 - [x] Implementar filtros de auditoria (data, usuário, tipo)
 - [x] Implementar funcionalidade de recuperação
 - [x] Testes de soft delete e auditoria
+
+
+## Fase 26: Parâmetros Ideais Globais por Espécie
+- [x] Criar tabela de espécies de peixe
+- [x] Criar tabela de parâmetros ideais por espécie
+- [x] Implementar interface de configuração de espécies
+- [x] Vincular tanques a espécies
+- [x] Reutilizar parâmetros ideais em todos os tanques da mesma espécie
+- [x] Testes de parâmetros globais
+
+## Fase 27: Funcionalidade Real em Botões de Ação
+- [x] Implementar ações em botões de alimentação
+- [x] Implementar ações em botões de relatórios
+- [x] Implementar ações em botões de configuração
+- [x] Implementar ações em botões de análise
+- [x] Testar todas as ações
+
+## Fase 28: Análises Gerais da Operação
+- [x] Dashboard de KPIs gerais
+- [x] Gráficos de consumo total de ração
+- [x] Gráficos de custos gerais
+- [x] Gráficos de receitas gerais
+- [x] Estatísticas de mortalidade geral
+- [x] Comparativo de tanques em números
+
+## Fase 29: Análises Específicas por Tanque
+- [x] Dashboard de KPIs por tanque
+- [x] Gráficos de parâmetros de água por tanque
+- [x] Gráficos de consumo de ração por tanque
+- [x] Gráficos de custos por tanque
+- [x] Gráficos de receitas por tanque
+- [x] Estatísticas de mortalidade por tanque
+
+## Fase 30: Gráficos Comparativos
+- [x] Comparativo de parâmetros entre tanques
+- [x] Comparativo de consumo entre tanques
+- [x] Comparativo de custos entre tanques
+- [x] Comparativo de receitas entre tanques
+- [x] Comparativo de mortalidade entre tanques
+- [x] Testes de análises comparativas
