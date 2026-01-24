@@ -441,3 +441,40 @@ export async function logSystemEvent(data: {
     console.error("[Database] Failed to log system event:", error);
   }
 }
+
+
+// ============ DELETE FUNCTIONS ============
+
+export async function deleteWebhookToken(tokenId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  return db.delete(webhookTokens).where(eq(webhookTokens.id, tokenId));
+}
+
+export async function deleteStockItem(itemId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Import stockItems table
+  const { stockItems } = await import("../drizzle/schema");
+  return db.delete(stockItems).where(eq(stockItems.id, itemId));
+}
+
+export async function deleteSupplier(supplierId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Import suppliers table
+  const { suppliers } = await import("../drizzle/schema");
+  return db.delete(suppliers).where(eq(suppliers.id, supplierId));
+}
+
+export async function deleteFeedingRecord(recordId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Import feedingRecords table
+  const { feedingRecords } = await import("../drizzle/schema");
+  return db.delete(feedingRecords).where(eq(feedingRecords.id, recordId));
+}

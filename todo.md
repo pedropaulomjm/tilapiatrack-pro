@@ -160,3 +160,14 @@
 - [x] Implementar collapse/expand de categorias
 - [x] Integrar ao layout principal
 - [x] Testes de navegação
+
+
+## Fase 24: Funcionalidade Real de Remoção
+- [x] Adicionar mutações tRPC para deletar tanques
+- [x] Adicionar mutações tRPC para deletar itens de estoque
+- [x] Adicionar mutações tRPC para deletar fornecedores
+- [x] Adicionar mutações tRPC para deletar alimentações
+- [x] Implementar confirmação de deleção em modais
+- [x] Adicionar feedback visual (toast) após remoção
+- [x] Implementar otimistic updates
+- [x] Testes de deleção

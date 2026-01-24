@@ -16,6 +16,7 @@ import {
 import { Plus, Trash2, Edit2 } from "lucide-react";
 import { Link } from "wouter";
 import { toast } from "sonner";
+import { DeleteButton } from "@/components/DeleteButton";
 
 export default function TankManagement() {
   const { isAuthenticated, loginUrl } = useAuth();
@@ -215,18 +216,20 @@ export default function TankManagement() {
                         Ver Dashboard
                       </Link>
                     </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => {
-                        if (confirm("Tem certeza que deseja deletar este tanque?")) {
-                          deleteMutation.mutate({ id: tank.id });
-                        }
+                    <DeleteButton
+                      itemName={tank.name}
+                      itemType="Tanque"
+                      onConfirm={async () => {
+                        await new Promise((resolve, reject) => {
+                          deleteMutation.mutate({ id: tank.id }, {
+                            onSuccess: resolve,
+                            onError: reject,
+                          });
+                        });
                       }}
                       disabled={deleteMutation.isPending}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                      size="icon"
+                    />
                   </div>
                 </CardContent>
               </Card>

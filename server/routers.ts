@@ -331,6 +331,39 @@ export const appRouter = router({
 
         return db.createWebhookToken(input);
       }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        return db.deleteWebhookToken(input.id);
+      }),
+  }),
+
+  // ============ STOCK PROCEDURES ============
+  stock: router({
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        return db.deleteStockItem(input.id);
+      }),
+  }),
+
+  // ============ SUPPLIERS PROCEDURES ============
+  suppliers: router({
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        return db.deleteSupplier(input.id);
+      }),
+  }),
+
+  // ============ FEEDING PROCEDURES ============
+  feeding: router({
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        return db.deleteFeedingRecord(input.id);
+      }),
   }),
 });
 
