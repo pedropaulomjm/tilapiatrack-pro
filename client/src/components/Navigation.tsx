@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Link, useLocation } from "wouter";
-import { BarChart3, Droplet, LogOut, Menu, Settings, TrendingUp, Webhook } from "lucide-react";
+import { BarChart3, Droplet, LogOut, Menu, Settings, TrendingUp, Webhook, Package, DollarSign, Utensils } from "lucide-react";
 import { useState } from "react";
 
 export function Navigation() {
@@ -23,6 +23,9 @@ export function Navigation() {
   const navItems = [
     { href: "/", label: "Dashboard", icon: BarChart3 },
     { href: "/tanks", label: "Tanques", icon: Droplet },
+    { href: "/feeding", label: "Alimentação", icon: BarChart3 },
+    { href: "/stock", label: "Estoque", icon: BarChart3 },
+    { href: "/financial", label: "Financeiro", icon: TrendingUp },
     { href: "/reports", label: "Relatórios", icon: BarChart3 },
     { href: "/insights", label: "Insights", icon: TrendingUp },
     { href: "/webhooks", label: "Webhooks", icon: Webhook },

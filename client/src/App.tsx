@@ -11,6 +11,9 @@ import TankSettings from "./pages/TankSettings";
 import Reports from "./pages/Reports";
 import WebhookManagement from "./pages/WebhookManagement";
 import Insights from "./pages/Insights";
+import FeedingControl from "./pages/FeedingControl";
+import StockManagement from "./pages/StockManagement";
+import FinancialDashboard from "./pages/FinancialDashboard";
 
 function Router() {
   return (
@@ -23,6 +26,9 @@ function Router() {
       <Route path={"/reports"} component={Reports} />
       <Route path={"/webhooks"} component={WebhookManagement} />
       <Route path={"/insights"} component={Insights} />
+      <Route path={"/feeding"} component={FeedingControl} />
+      <Route path={"/stock"} component={StockManagement} />
+      <Route path={"/financial"} component={FinancialDashboard} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

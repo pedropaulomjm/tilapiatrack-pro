@@ -15,6 +15,13 @@
       "when": 1769233329741,
       "tag": "0001_glamorous_proteus",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1769234213011,
+      "tag": "0002_skinny_princess_powerful",
+      "breakpoints": true
     }
   ]
 }
