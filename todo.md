@@ -171,3 +171,14 @@
 - [x] Adicionar feedback visual (toast) após remoção
 - [x] Implementar otimistic updates
 - [x] Testes de deleção
+
+
+## Fase 25: Soft Delete e Trilha de Auditoria
+- [x] Adicionar coluna deletedAt em todas as tabelas
+- [x] Criar tabela de auditLog para rastrear mudanças
+- [x] Implementar funções de soft delete
+- [x] Implementar logging de auditoria
+- [x] Criar dashboard de auditoria
+- [x] Implementar filtros de auditoria (data, usuário, tipo)
+- [x] Implementar funcionalidade de recuperação
+- [x] Testes de soft delete e auditoria

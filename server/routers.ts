@@ -365,6 +365,33 @@ export const appRouter = router({
         return db.deleteFeedingRecord(input.id);
       }),
   }),
+
+  audit: router({
+    getLogs: protectedProcedure
+      .input(z.object({
+        userId: z.number().optional(),
+        entityType: z.string().optional(),
+        action: z.enum(["create", "update", "delete", "restore"]).optional(),
+        startDate: z.date().optional(),
+        endDate: z.date().optional(),
+        limit: z.number().optional(),
+        offset: z.number().optional(),
+      }))
+      .query(async ({ input, ctx }) => {
+        if (ctx.user.role !== "admin" && input.userId && input.userId !== ctx.user.id) {
+          throw new TRPCError({ code: "FORBIDDEN" });
+        }
+        return db.getAuditLogs({
+          userId: ctx.user.role === "admin" ? input.userId : ctx.user.id,
+          entityType: input.entityType,
+          action: input.action,
+          startDate: input.startDate,
+          endDate: input.endDate,
+          limit: input.limit,
+          offset: input.offset,
+        });
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

@@ -389,3 +389,24 @@ export const tankDetails = mysqlTable("tank_details", {
 
 export type TankDetails = typeof tankDetails.$inferSelect;
 export type InsertTankDetails = typeof tankDetails.$inferInsert;
+
+
+/**
+ * Trilha de auditoria - rastreia todas as mudanças no sistema
+ */
+export const auditLog = mysqlTable("audit_log", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  action: mysqlEnum("action", ["create", "update", "delete", "restore"]).notNull(),
+  entityType: varchar("entityType", { length: 50 }).notNull(), // "tank", "stock", "supplier", etc
+  entityId: int("entityId").notNull(),
+  entityName: varchar("entityName", { length: 255 }), // Nome do item deletado para referência
+  changes: json("changes"), // JSON com antes/depois para updates
+  reason: text("reason"), // Motivo da ação
+  ipAddress: varchar("ipAddress", { length: 45 }),
+  userAgent: text("userAgent"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type AuditLog = typeof auditLog.$inferSelect;
+export type InsertAuditLog = typeof auditLog.$inferInsert;

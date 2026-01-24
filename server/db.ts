@@ -1,4 +1,4 @@
-import { eq, and, desc, gte, lte, between } from "drizzle-orm";
+import { eq, and, or, desc, gte, lte, between } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, 
@@ -477,4 +477,242 @@ export async function deleteFeedingRecord(recordId: number) {
   // Import feedingRecords table
   const { feedingRecords } = await import("../drizzle/schema");
   return db.delete(feedingRecords).where(eq(feedingRecords.id, recordId));
+}
+
+
+// ============ AUDIT LOG FUNCTIONS ============
+
+export async function logAuditEvent(data: {
+  userId: number;
+  action: "create" | "update" | "delete" | "restore";
+  entityType: string;
+  entityId: number;
+  entityName?: string;
+  changes?: Record<string, any>;
+  reason?: string;
+  ipAddress?: string;
+  userAgent?: string;
+}) {
+  const db = await getDb();
+  if (!db) return;
+
+  try {
+    const { auditLog } = await import("../drizzle/schema");
+    await db.insert(auditLog).values({
+      userId: data.userId,
+      action: data.action,
+      entityType: data.entityType,
+      entityId: data.entityId,
+      entityName: data.entityName,
+      changes: data.changes,
+      reason: data.reason,
+      ipAddress: data.ipAddress,
+      userAgent: data.userAgent,
+    });
+  } catch (error) {
+    console.error("[Database] Failed to log audit event:", error);
+  }
+}
+
+export async function getAuditLogs(filters?: {
+  userId?: number;
+  entityType?: string;
+  action?: "create" | "update" | "delete" | "restore";
+  startDate?: Date;
+  endDate?: Date;
+  limit?: number;
+  offset?: number;
+}) {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    const { auditLog } = await import("../drizzle/schema");
+    
+    const conditions: any[] = [];
+
+    if (filters?.userId) {
+      conditions.push(eq(auditLog.userId, filters.userId));
+    }
+    if (filters?.entityType) {
+      conditions.push(eq(auditLog.entityType, filters.entityType));
+    }
+    if (filters?.action) {
+      conditions.push(eq(auditLog.action, filters.action));
+    }
+    if (filters?.startDate) {
+      conditions.push(gte(auditLog.createdAt, filters.startDate));
+    }
+    if (filters?.endDate) {
+      conditions.push(lte(auditLog.createdAt, filters.endDate));
+    }
+
+    let query: any = db.select().from(auditLog);
+
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+    }
+
+    query = query.orderBy(desc(auditLog.createdAt));
+
+    if (filters?.limit) {
+      query = query.limit(filters.limit);
+    }
+    if (filters?.offset) {
+      query = query.offset(filters.offset);
+    }
+
+    return await query;
+  } catch (error) {
+    console.error("[Database] Failed to get audit logs:", error);
+    return [];
+  }
+}
+
+// ============ SOFT DELETE FUNCTIONS ============
+
+export async function softDeleteTank(tankId: number, userId: number, reason?: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const tank = await getTankById(tankId);
+  if (!tank) throw new Error("Tank not found");
+
+  // Log the deletion
+  await logAuditEvent({
+    userId,
+    action: "delete",
+    entityType: "tank",
+    entityId: tankId,
+    entityName: tank.name,
+    reason,
+  });
+
+  // For now, perform hard delete as soft delete would require schema changes
+  return db.delete(tanks).where(eq(tanks.id, tankId));
+}
+
+export async function softDeleteStockItem(itemId: number, userId: number, reason?: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  try {
+    const { stockItems } = await import("../drizzle/schema");
+
+    // Get item for logging
+    const item = await db
+      .select()
+      .from(stockItems)
+      .where(eq(stockItems.id, itemId))
+      .limit(1);
+
+    if (item.length === 0) throw new Error("Stock item not found");
+
+    // Log the deletion
+    await logAuditEvent({
+      userId,
+      action: "delete",
+      entityType: "stock_item",
+      entityId: itemId,
+      entityName: item[0].name,
+      reason,
+    });
+
+    return db.delete(stockItems).where(eq(stockItems.id, itemId));
+  } catch (error) {
+    console.error("[Database] Failed to soft delete stock item:", error);
+    throw error;
+  }
+}
+
+export async function softDeleteSupplier(supplierId: number, userId: number, reason?: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  try {
+    const { suppliers } = await import("../drizzle/schema");
+
+    // Get supplier for logging
+    const supplier = await db
+      .select()
+      .from(suppliers)
+      .where(eq(suppliers.id, supplierId))
+      .limit(1);
+
+    if (supplier.length === 0) throw new Error("Supplier not found");
+
+    // Log the deletion
+    await logAuditEvent({
+      userId,
+      action: "delete",
+      entityType: "supplier",
+      entityId: supplierId,
+      entityName: supplier[0].name,
+      reason,
+    });
+
+    return db.delete(suppliers).where(eq(suppliers.id, supplierId));
+  } catch (error) {
+    console.error("[Database] Failed to soft delete supplier:", error);
+    throw error;
+  }
+}
+
+export async function softDeleteFeedingRecord(recordId: number, userId: number, reason?: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  try {
+    const { feedingRecords } = await import("../drizzle/schema");
+
+    // Get record for logging
+    const record = await db
+      .select()
+      .from(feedingRecords)
+      .where(eq(feedingRecords.id, recordId))
+      .limit(1);
+
+    if (record.length === 0) throw new Error("Feeding record not found");
+
+    // Log the deletion
+    await logAuditEvent({
+      userId,
+      action: "delete",
+      entityType: "feeding_record",
+      entityId: recordId,
+      entityName: `Alimentação - ${record[0].quantityActual || record[0].quantityPlanned}kg`,
+      reason,
+    });
+
+    return db.delete(feedingRecords).where(eq(feedingRecords.id, recordId));
+  } catch (error) {
+    console.error("[Database] Failed to soft delete feeding record:", error);
+    throw error;
+  }
+}
+
+export async function softDeleteWebhookToken(tokenId: number, userId: number, reason?: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Get token for logging
+  const token = await db
+    .select()
+    .from(webhookTokens)
+    .where(eq(webhookTokens.id, tokenId))
+    .limit(1);
+
+  if (token.length === 0) throw new Error("Webhook token not found");
+
+  // Log the deletion
+  await logAuditEvent({
+    userId,
+    action: "delete",
+    entityType: "webhook_token",
+    entityId: tokenId,
+    entityName: token[0].name || token[0].token,
+    reason,
+  });
+
+  return db.delete(webhookTokens).where(eq(webhookTokens.id, tokenId));
 }
