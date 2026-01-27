@@ -257,3 +257,15 @@
 - [x] Criar breadcrumbs de navegação
 - [x] Implementar guias de solução de problemas
 - [x] Testes de notificações acionáveis
+
+
+## Fase 35: WebSockets para Atualização em Tempo Real
+- [x] Instalar Socket.io no servidor
+- [x] Configurar servidor WebSocket
+- [x] Implementar broadcast de parâmetros de água
+- [x] Implementar broadcast de alertas
+- [x] Criar hook useWebSocket no cliente
+- [x] Integrar WebSocket no Dashboard
+- [x] Integrar WebSocket no AlertsCenter
+- [x] Adicionar reconexão automática
+- [x] Testes de WebSocket
