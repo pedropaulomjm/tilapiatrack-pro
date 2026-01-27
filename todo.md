@@ -269,3 +269,13 @@
 - [x] Integrar WebSocket no AlertsCenter
 - [x] Adicionar reconexão automática
 - [x] Testes de WebSocket
+
+
+## Fase 36: Integração de WebSocket ao Dashboard
+- [x] Atualizar Dashboard com RealtimeParameterIndicator
+- [ ] Integrar WebSocket em TankDetailDashboard
+- [ ] Integrar WebSocket em TankManagement
+- [ ] Atualizar AlertsCenter com alertas em tempo real
+- [x] Sincronizar subscrição de tanques ao mudar seleção
+- [x] Adicionar indicador de conexão WebSocket
+- [x] Testes de integração WebSocket

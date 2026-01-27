@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useWebSocket } from "@/hooks/useWebSocket";
 import { trpc } from "@/lib/trpc";
 import { ParameterIndicator } from "@/components/ParameterIndicator";
+import { RealtimeParameterIndicator } from "@/components/RealtimeParameterIndicator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -11,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AlertCircle, Plus, TrendingUp } from "lucide-react";
+import { AlertCircle, Plus, TrendingUp, Wifi, WifiOff } from "lucide-react";
 import { Link } from "wouter";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { DEFAULT_PARAMETER_LIMITS, PARAMETER_TYPES } from "@shared/constants";
@@ -19,6 +21,7 @@ import { DEFAULT_PARAMETER_LIMITS, PARAMETER_TYPES } from "@shared/constants";
 export default function Dashboard() {
   const { user, loading: authLoading, isAuthenticated, loginUrl } = useAuth();
   const [selectedTankId, setSelectedTankId] = useState<number | null>(null);
+  const { isConnected, subscribeTank, unsubscribeTank } = useWebSocket({ enabled: true });
 
   // Queries
   const { data: tanks, isLoading: tanksLoading } = trpc.tanks.list.useQuery(undefined, {
@@ -30,6 +33,15 @@ export default function Dashboard() {
       setSelectedTankId(tanks[0].id);
     }
   }, [tanks, selectedTankId]);
+
+  useEffect(() => {
+    if (selectedTankId) {
+      subscribeTank(selectedTankId);
+      return () => {
+        unsubscribeTank(selectedTankId);
+      };
+    }
+  }, [selectedTankId, subscribeTank, unsubscribeTank]);
 
   const { data: latestData } = trpc.waterQuality.getLatest.useQuery(
     { tankId: selectedTankId! },
@@ -183,6 +195,21 @@ export default function Dashboard() {
           </Button>
         </div>
 
+        {/* Connection Status */}
+        <div className="mb-6 flex items-center gap-2 p-3 rounded-lg bg-muted/50">
+          {isConnected ? (
+            <>
+              <Wifi className="h-4 w-4 text-green-500 animate-pulse" />
+              <span className="text-sm text-green-600 font-medium">Conectado em tempo real</span>
+            </>
+          ) : (
+            <>
+              <WifiOff className="h-4 w-4 text-gray-400" />
+              <span className="text-sm text-muted-foreground">Desconectado - Atualizando via polling</span>
+            </>
+          )}
+        </div>
+
         {/* Alerts Section */}
         {unresolvedAlerts && unresolvedAlerts.length > 0 && (
           <Card className="mb-6 border-destructive/50 bg-destructive/5">
@@ -244,44 +271,56 @@ export default function Dashboard() {
           </Card>
         )}
 
-        {/* Parameter Indicators */}
+        {/* Parameter Indicators - Real-time */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <ParameterIndicator
-            label="pH"
-            value={latestData?.pH ? Number(latestData.pH) : null}
-            unit=""
-            minSafe={limits.pH?.minSafe}
-            maxSafe={limits.pH?.maxSafe}
-            minCritical={limits.pH?.minCritical}
-            maxCritical={limits.pH?.maxCritical}
-          />
-          <ParameterIndicator
-            label="Temperatura"
-            value={latestData?.temperature ? Number(latestData.temperature) : null}
-            unit="°C"
-            minSafe={limits.temperature?.minSafe}
-            maxSafe={limits.temperature?.maxSafe}
-            minCritical={limits.temperature?.minCritical}
-            maxCritical={limits.temperature?.maxCritical}
-          />
-          <ParameterIndicator
-            label="Oxigênio Dissolvido"
-            value={latestData?.dissolvedOxygen ? Number(latestData.dissolvedOxygen) : null}
-            unit="mg/L"
-            minSafe={limits.dissolvedOxygen?.minSafe}
-            maxSafe={limits.dissolvedOxygen?.maxSafe}
-            minCritical={limits.dissolvedOxygen?.minCritical}
-            maxCritical={limits.dissolvedOxygen?.maxCritical}
-          />
-          <ParameterIndicator
-            label="Amônia"
-            value={latestData?.ammonia ? Number(latestData.ammonia) : null}
-            unit="mg/L"
-            minSafe={limits.ammonia?.minSafe}
-            maxSafe={limits.ammonia?.maxSafe}
-            minCritical={limits.ammonia?.minCritical}
-            maxCritical={limits.ammonia?.maxCritical}
-          />
+          {selectedTankId && (
+            <>
+              <RealtimeParameterIndicator
+                tankId={selectedTankId}
+                parameter="pH"
+                label="pH"
+                unit=""
+                minSafe={limits.pH?.minSafe}
+                maxSafe={limits.pH?.maxSafe}
+                minCritical={limits.pH?.minCritical}
+                maxCritical={limits.pH?.maxCritical}
+                currentValue={latestData?.pH ? Number(latestData.pH) : undefined}
+              />
+              <RealtimeParameterIndicator
+                tankId={selectedTankId}
+                parameter="temperature"
+                label="Temperatura"
+                unit="°C"
+                minSafe={limits.temperature?.minSafe}
+                maxSafe={limits.temperature?.maxSafe}
+                minCritical={limits.temperature?.minCritical}
+                maxCritical={limits.temperature?.maxCritical}
+                currentValue={latestData?.temperature ? Number(latestData.temperature) : undefined}
+              />
+              <RealtimeParameterIndicator
+                tankId={selectedTankId}
+                parameter="dissolvedOxygen"
+                label="Oxigênio Dissolvido"
+                unit="mg/L"
+                minSafe={limits.dissolvedOxygen?.minSafe}
+                maxSafe={limits.dissolvedOxygen?.maxSafe}
+                minCritical={limits.dissolvedOxygen?.minCritical}
+                maxCritical={limits.dissolvedOxygen?.maxCritical}
+                currentValue={latestData?.dissolvedOxygen ? Number(latestData.dissolvedOxygen) : undefined}
+              />
+              <RealtimeParameterIndicator
+                tankId={selectedTankId}
+                parameter="ammonia"
+                label="Amônia"
+                unit="mg/L"
+                minSafe={limits.ammonia?.minSafe}
+                maxSafe={limits.ammonia?.maxSafe}
+                minCritical={limits.ammonia?.minCritical}
+                maxCritical={limits.ammonia?.maxCritical}
+                currentValue={latestData?.ammonia ? Number(latestData.ammonia) : undefined}
+              />
+            </>
+          )}
         </div>
 
         {/* Chart */}
