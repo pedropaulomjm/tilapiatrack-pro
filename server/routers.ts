@@ -6,6 +6,9 @@ import { z } from "zod";
 import * as db from "./db";
 import { TRPCError } from "@trpc/server";
 import { invokeLLM } from "./_core/llm";
+import { transcribeAudio } from "./_core/voiceTranscription";
+import { getMarketSnapshot } from "./marketData";
+import { askFable } from "./fable";
 
 export const appRouter = router({
   system: systemRouter,
@@ -436,6 +439,60 @@ export const appRouter = router({
           limit: input.limit,
           offset: input.offset,
         });
+      }),
+  }),
+
+  // ============ TERMINAL DE MERCADO (BLOOMBERG-STYLE) ============
+  terminal: router({
+    snapshot: protectedProcedure.query(() => {
+      return getMarketSnapshot();
+    }),
+
+    ask: protectedProcedure
+      .input(z.object({
+        messages: z.array(z.object({
+          role: z.enum(["user", "assistant"]),
+          content: z.string().min(1).max(8000),
+        })).min(1).max(40),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        // Contexto leve da fazenda para o assistente relacionar mercado x operação
+        let farmContext: string | undefined;
+        try {
+          const tanks = await db.getTanksByUserId(ctx.user.id);
+          if (tanks.length > 0) {
+            farmContext = `${tanks.length} tanque(s): ${tanks
+              .map(t => `${t.name} (${t.status})`)
+              .join(", ")}`;
+          }
+        } catch {
+          // Contexto da fazenda é opcional; o chat funciona sem ele
+        }
+
+        return askFable(input.messages, farmContext);
+      }),
+
+    transcribe: protectedProcedure
+      .input(z.object({
+        audioBase64: z.string().min(1),
+        mimeType: z.string().min(1),
+        language: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const result = await transcribeAudio({
+          audioUrl: `data:${input.mimeType};base64,${input.audioBase64}`,
+          language: input.language ?? "pt",
+        });
+
+        if ("error" in result) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: result.error,
+            cause: result,
+          });
+        }
+
+        return { text: result.text, language: result.language };
       }),
   }),
 });

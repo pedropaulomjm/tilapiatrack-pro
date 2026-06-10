@@ -1,12 +1,15 @@
 import { Server as HTTPServer } from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
 import type { WaterQualityData, Alert } from "../drizzle/schema";
+import type { Quote, Headline } from "./marketData";
 
 export interface ServerToClientEvents {
   "water-quality:update": (data: WaterQualityData) => void;
   "alert:new": (data: Alert) => void;
   "alert:resolved": (data: { alertId: number; tankId: number }) => void;
   "connection-status": (data: { status: "connected" | "disconnected" }) => void;
+  "market:tick": (data: { quotes: Quote[]; at: number }) => void;
+  "market:headline": (data: Headline) => void;
 }
 
 export interface ClientToServerEvents {

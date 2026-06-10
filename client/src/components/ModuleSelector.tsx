@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import {
+  Activity,
   ChevronDown,
   DollarSign,
   Droplet,
@@ -56,6 +57,11 @@ const modules: Module[] = [
         label: "Dashboard Financeiro",
         href: "/financial",
         icon: <DollarSign className="h-4 w-4" />,
+      },
+      {
+        label: "Terminal de Mercado",
+        href: "/terminal",
+        icon: <Activity className="h-4 w-4" />,
       },
       {
         label: "Lucros e Custos",

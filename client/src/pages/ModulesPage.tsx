@@ -43,6 +43,11 @@ const moduleCategories: ModuleCategory[] = [
         icon: <DollarSign className="h-4 w-4" />,
       },
       {
+        label: "Terminal de Mercado",
+        href: "/terminal",
+        icon: <TrendingUp className="h-4 w-4" />,
+      },
+      {
         label: "Relatórios Financeiros",
         href: "/reports",
         icon: <FileText className="h-4 w-4" />,

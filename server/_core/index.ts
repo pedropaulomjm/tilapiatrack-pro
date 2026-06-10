@@ -8,6 +8,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { initializeWebSocket } from "../websocket";
+import { startMarketFeed } from "../marketData";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -36,6 +37,8 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // Initialize WebSocket
   initializeWebSocket(server);
+  // Feed de mercado ao vivo do Terminal
+  startMarketFeed();
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
   // tRPC API
