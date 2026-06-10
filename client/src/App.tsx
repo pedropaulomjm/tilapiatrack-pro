@@ -22,6 +22,7 @@ import Insights from "./pages/Insights";
 import FeedingControl from "./pages/FeedingControl";
 import StockManagement from "./pages/StockManagement";
 import FinancialDashboard from "./pages/FinancialDashboard";
+import Terminal from "./pages/Terminal";
 import HomeDashboard from "./pages/HomeDashboard";
 import SupplierComparison from "./pages/SupplierComparison";
 import ModulesPage from "./pages/ModulesPage";
@@ -41,6 +42,7 @@ function Router() {
         <Route path={"/feeding"} component={FeedingControl} />
         <Route path={"/stock"} component={StockManagement} />
         <Route path={"/financial"} component={FinancialDashboard} />
+        <Route path={"/terminal"} component={Terminal} />
         <Route path={"/home"} component={HomeDashboard} />
         <Route path={"/suppliers"} component={SupplierComparison} />
         <Route path={"/audit"} component={AuditLog} />
